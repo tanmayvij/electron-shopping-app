@@ -1,0 +1,26 @@
+{
+  "name": "electron-shopping-app",
+  "version": "1.0.0",
+  "description": "Shopping List Desktop app using Electron",
+  "main": "app.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tanmayvij/electron-shopping-app.git"
+  },
+  "keywords": [
+    "electron"
+  ],
+  "author": "Tanmay Vij",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tanmayvij/electron-shopping-app/issues"
+  },
+  "homepage": "https://github.com/tanmayvij/electron-shopping-app#readme",
+  "dependencies": {
+    "electron": "^5.0.0",
+    "mongoose": "^5.5.5"
+  }
+}
