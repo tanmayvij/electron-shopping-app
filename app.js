@@ -2,7 +2,7 @@ const electron = require('electron');
 const url = require('url');
 const path = require('path');
 
-const {app, BrowserWindow, Menu} = electron;
+const {app, BrowserWindow, Menu, ipcMain} = electron;
 
 var mainWindow, addWindow;
 
@@ -10,7 +10,7 @@ function createAddWindow() {
     // Create new window
     addWindow = new BrowserWindow({
         width: 300,
-        height: 200,
+        height: 300,
         title: 'Add Shopping List Item'
     });
     // Load HTML
@@ -38,7 +38,11 @@ const mainMenuTemplate = [
                 }
             },
             {
-                'label': 'Clear Items'
+                'label': 'Clear Items',
+                click()
+                {
+                    mainWindow.webContents.send('item:clear');
+                }
             },
             {
                 'label': 'Quit',
@@ -52,6 +56,37 @@ const mainMenuTemplate = [
     }
 ];
 
+if(process.platform == 'darwin') {
+    mainMenuTemplate.unshift({});
+}
+
+if(process.env.NODE_ENV !== 'production') {
+    mainMenuTemplate.push({
+        'label': 'Developer Tools',
+        'submenu':[
+            {
+              label: 'Toggle DevTools',
+              accelerator:process.platform == 'darwin' ? 'Command+I' : 'Ctrl+I',
+              click(item, focusedWindow){
+                focusedWindow.toggleDevTools();
+              }
+            },
+            {
+                'role': 'reload'
+            }
+          ]
+    });
+}
+
+// Catch item:add
+ipcMain.on('item:add', function(e, item){
+    mainWindow.webContents.send('item:add', item);
+    // Add to db
+    addWindow.close(); 
+    // Still have a reference to addWindow in memory. Need to reclaim memory (Grabage collection)
+    //addWindow = null;
+});
+
 // Listen for app to be ready
 app.on('ready', function(){
     // Create new window
@@ -62,6 +97,8 @@ app.on('ready', function(){
         protocol: 'file:',
         slashes: true
     }));
+    // Send data from db
+    //mainWindow.webContents.send('item:add', );
     // Quit app when closed
     mainWindow.on('closed', function(){
         app.quit();
