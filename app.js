@@ -1,6 +1,9 @@
+require('./db');
 const electron = require('electron');
 const url = require('url');
 const path = require('path');
+const mongoose = require('mongoose');
+var ItemModel = mongoose.model('Item')
 
 const {app, BrowserWindow, Menu, ipcMain} = electron;
 
@@ -41,7 +44,10 @@ const mainMenuTemplate = [
                 'label': 'Clear Items',
                 click()
                 {
-                    mainWindow.webContents.send('item:clear');
+                    ItemModel.deleteMany({}, function(err, data) {
+                        if(!err)
+                            mainWindow.webContents.send('item:clear');
+                    });
                 }
             },
             {
@@ -81,10 +87,8 @@ if(process.env.NODE_ENV !== 'production') {
 // Catch item:add
 ipcMain.on('item:add', function(e, item){
     mainWindow.webContents.send('item:add', item);
-    // Add to db
+    ItemModel.create(item, function(err, result){});
     addWindow.close(); 
-    // Still have a reference to addWindow in memory. Need to reclaim memory (Grabage collection)
-    //addWindow = null;
 });
 
 // Listen for app to be ready
@@ -98,7 +102,13 @@ app.on('ready', function(){
         slashes: true
     }));
     // Send data from db
-    //mainWindow.webContents.send('item:add', );
+    ItemModel
+    .find()
+    .exec(function(err, data) {
+        data.forEach(item => {
+            mainWindow.webContents.send('item:add', item['_doc']);
+        });      
+    });
     // Quit app when closed
     mainWindow.on('closed', function(){
         app.quit();

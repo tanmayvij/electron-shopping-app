@@ -24,7 +24,7 @@
         ipcRenderer.on('item:add', function(e, item){
             ul.className = 'collection';
             const li = document.createElement('li');
-            li.className = 'collection-item';
+            li.className = 'collection-item';console.log(item);
             itemExtracted = `${item.item} | Price: $${item.price}`;
             const itemText = document.createTextNode(itemExtracted);
             li.appendChild(itemText);
@@ -33,7 +33,6 @@
         ipcRenderer.on('item:clear', function(){
             ul.className = '';
             ul.innerHTML = '';
-            // Clear db
         });
         ul.addEventListener('dblclick', removeItem);
         function removeItem(e){
