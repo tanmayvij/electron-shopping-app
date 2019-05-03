@@ -86,9 +86,20 @@ if(process.env.NODE_ENV !== 'production') {
 
 // Catch item:add
 ipcMain.on('item:add', function(e, item){
-    mainWindow.webContents.send('item:add', item);
-    ItemModel.create(item, function(err, result){});
-    addWindow.close(); 
+    ItemModel.create(item, function(err, result){
+        itemNew = {
+            item: item.item,
+            price: item.price,
+            _id: result._id
+        };
+        mainWindow.webContents.send('item:add', itemNew);
+        addWindow.close(); 
+    });
+});
+
+// Catch item:delete
+ipcMain.on('item:delete', function(e, id){
+    ItemModel.deleteOne({_id: id}, function(err, result){});
 });
 
 // Listen for app to be ready
@@ -106,7 +117,8 @@ app.on('ready', function(){
     .find()
     .exec(function(err, data) {
         data.forEach(item => {
-            mainWindow.webContents.send('item:add', item['_doc']);
+            item = JSON.stringify(item);
+            mainWindow.webContents.send('item:add', item);
         });      
     });
     // Quit app when closed

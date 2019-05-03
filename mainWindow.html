@@ -19,12 +19,16 @@
     <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js" type="text/javascript"></script>
     <script>
         const electron = require('electron');
+        const mongoose = require('mongoose');
         const {ipcRenderer} = electron;
         const ul = document.querySelector('ul');
         ipcRenderer.on('item:add', function(e, item){
+            if(typeof(item)=='string')
+                item = JSON.parse(item);
             ul.className = 'collection';
             const li = document.createElement('li');
-            li.className = 'collection-item';console.log(item);
+            li.className = 'collection-item';
+            li.setAttribute("id", item._id);
             itemExtracted = `${item.item} | Price: $${item.price}`;
             const itemText = document.createTextNode(itemExtracted);
             li.appendChild(itemText);
@@ -38,6 +42,8 @@
         function removeItem(e){
             event.target.remove();
             // Remove from db
+            var id = event.target.getAttribute('id');
+            ipcRenderer.send('item:delete', id);
             if(ul.children.length == 0){
                 ul.className = '';
             }
