@@ -3,7 +3,9 @@ const electron = require('electron');
 const url = require('url');
 const path = require('path');
 const mongoose = require('mongoose');
-var ItemModel = mongoose.model('Item')
+var ItemModel = mongoose.model('Item');
+
+process.env.NODE_ENV = 'production';
 
 const {app, BrowserWindow, Menu, ipcMain} = electron;
 

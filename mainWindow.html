@@ -19,7 +19,6 @@
     <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js" type="text/javascript"></script>
     <script>
         const electron = require('electron');
-        const mongoose = require('mongoose');
         const {ipcRenderer} = electron;
         const ul = document.querySelector('ul');
         ipcRenderer.on('item:add', function(e, item){
